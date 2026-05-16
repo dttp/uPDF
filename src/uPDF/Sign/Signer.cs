@@ -27,6 +27,19 @@ namespace uPDF.Sign
 {
     public class Signer
     {
+        public Signer()
+        {
+            try
+            {
+                FontProgramFactory.ClearRegisteredFonts();
+                FontProgramFactory.ClearRegisteredFontFamilies();
+            }
+            catch
+            {
+                // Ignore any errors when clearing font cache, as it may not be supported in all environments.
+            }
+        }
+
         public SignOption Options { get; set; }
 
         private SigningContext _context;
@@ -225,6 +238,16 @@ namespace uPDF.Sign
                 var fontPath = Path.Combine(
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                     "Quivira.ttf");
+
+                try
+                {
+                    iText.IO.Font.FontCache.ClearSavedFonts();
+                }
+                catch
+                {
+                    // Ignore any errors when clearing font cache, as it may not be supported in all environments.
+                }
+
                 byte[] fontBytes = File.ReadAllBytes(fontPath); 
                 var font = PdfFontFactory.CreateFont(
                     fontBytes,
