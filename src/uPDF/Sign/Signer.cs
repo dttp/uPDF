@@ -224,8 +224,13 @@ namespace uPDF.Sign
 
                 var fontPath = Path.Combine(
                     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                    "Quivira.otf");
-                var font = PdfFontFactory.CreateFont(FontProgramFactory.CreateFont(fontPath));
+                    "Quivira.ttf");
+                byte[] fontBytes = File.ReadAllBytes(fontPath); 
+                var font = PdfFontFactory.CreateFont(
+                    fontBytes,
+                    PdfEncodings.IDENTITY_H,
+                    PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED
+                );
 
                 var textRect = new Rectangle(logoW + padding, padding, textAreaW, h - padding * 2);
                 var canvas = new Canvas(pdfCanvas, textRect);
