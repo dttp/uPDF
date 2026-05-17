@@ -158,6 +158,7 @@
     <Compile Include="Sign\Signer.cs" />
     <Compile Include="Sign\SigningContext.cs" />
     <Compile Include="Sign\SignOption.cs" />
+    <Compile Include="Sign\SignOptionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

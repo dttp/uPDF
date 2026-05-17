@@ -11,6 +11,7 @@ namespace uPDF
             var result = CommandLine.Parser.Default.ParseArguments<SignOption>(args)
                 .WithParsed(options =>
                 {
+                    options.SignatureTextFormat = SignOptionHelper.ResolveSignatureTextFormat(options.SignatureTextFormat);
                     try
                     {
                         var signer = new Signer
