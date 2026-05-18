@@ -30,6 +30,10 @@ namespace uPDF.Sign
 
         private string _workingDir;
         private string _inputFileName;
+
+        [JsonConstructor]
+        public SigningContext() { }
+
         public SigningContext(string workingDir, string inputFileName)
         {
             _workingDir = workingDir;
