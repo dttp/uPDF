@@ -315,8 +315,31 @@ namespace uPDF.Sign
             }
         }
 
+        private void TryLoadFont()
+        {
+            var fontPath = Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "Quivira.ttf");
+
+            try
+            {
+                iText.IO.Font.FontCache.ClearSavedFonts();
+                byte[] fontBytes = File.ReadAllBytes(fontPath);
+                var font = PdfFontFactory.CreateFont(
+                    fontBytes,
+                    PdfEncodings.IDENTITY_H,
+                    PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED
+                );
+            }
+            catch
+            {
+                // Ignore any errors when clearing font cache, as it may not be supported in all environments.
+            }
+        }
+
         private void SignDefer(string tempFile, string targetFile, byte[] signedHash)
         {
+            TryLoadFont();
             using (PdfReader reader = new PdfReader(tempFile))
             {
                 using (FileStream outStream = new FileStream(targetFile, FileMode.Create, FileAccess.Write))

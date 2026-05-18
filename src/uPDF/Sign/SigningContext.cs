@@ -22,6 +22,8 @@ namespace uPDF.Sign
 
         public string SignedSignatureFile { get; set; }
 
+        public string CertChainsRawData { get; set; }
+
         [JsonIgnore]
         public X509Certificate[] CertificateChains { get; set; }
 
@@ -57,10 +59,32 @@ namespace uPDF.Sign
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull // bỏ null fields
             };
 
+            SerializeCertificateChains();
+
             var json = JsonSerializer.Serialize(this, options);
             File.WriteAllText(filePath, json);
 
             File.WriteAllBytes(this.SignatureFile, this.SignatureHash);
+        }
+
+        private void SerializeCertificateChains()
+        {
+            if (CertificateChains != null)
+            {
+                var bytes = CertificateChains[0].GetEncoded();
+                CertChainsRawData = Convert.ToBase64String(bytes);
+            }
+        }
+
+        private void DeserializeCertificateChains()
+        {
+            if (!string.IsNullOrEmpty(CertChainsRawData))
+            {
+                var bytes = Convert.FromBase64String(CertChainsRawData);
+                var certParser = new Org.BouncyCastle.X509.X509CertificateParser();
+                var cert = certParser.ReadCertificate(bytes);
+                CertificateChains = new[] { cert };
+            }
         }
 
         public void Load()
@@ -88,6 +112,8 @@ namespace uPDF.Sign
                 this.TempFile = context.TempFile;
                 this.SignatureFile = context.SignatureFile;
                 this.SignatureHash = context.SignatureHash;
+                this.CertChainsRawData = context.CertChainsRawData;
+                this.DeserializeCertificateChains();
             }
         }
 
