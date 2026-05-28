@@ -51,6 +51,12 @@ namespace uPDF.Sign
                 _context.X509Cert = new X509Certificate2(Options.Certificate, Options.CertificatePassword, X509KeyStorageFlags.Exportable);
                 var parser = new X509CertificateParser();
                 _context.CertificateChains[0] = parser.ReadCertificate(_context.X509Cert.RawData);
+
+                if (_context.CertificateChains[0] == null)
+                {
+                    throw new Exception($"Failed to load certificate from {Options.Certificate}.");
+                }
+
                 _context.SignerName = _context.CertificateChains[0].SubjectDN.GetValueList(Org.BouncyCastle.Asn1.X509.X509Name.CN)[0].ToString();
             }
             else if (Options.Mode == SignMode.CalculateHashOnly)
@@ -60,6 +66,12 @@ namespace uPDF.Sign
                 {
                     _context.CertificateChains[0] = parser.ReadCertificate(stream);
                 }
+
+                if (_context.CertificateChains[0] == null)
+                {
+                    throw new Exception($"Failed to load certificate from {Options.Certificate}.");
+                }
+
                 _context.SignerName = _context.CertificateChains[0].SubjectDN.GetValueList(Org.BouncyCastle.Asn1.X509.X509Name.CN)[0].ToString();
             }
         }
